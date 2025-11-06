@@ -86,7 +86,7 @@ MODEL:
   DECODER_NUM_LAYERS: 1
 TASKS:
   TASKS:  ["instruments"]
-  NUM_CLASSES: [7]
+  NUM_CLASSES: [6]
   LOSS_FUNC: ["cross_entropy"]
   HEAD_ACT:  ["softmax"]
   LOSS_WEIGHTS:  [1.0] 
