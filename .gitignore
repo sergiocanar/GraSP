@@ -1,5 +1,5 @@
 TAPIS/outputs
-TAPIS/data/GraSP
+TAPIS/data/
 TAPIS/region_proposals/output
 */__pycache__
 *.pyth
