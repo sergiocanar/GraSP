@@ -1,7 +1,7 @@
 # Experiment setup
 TRAIN_FOLD="train" # or fold1, fold2
 TEST_FOLD="val" # or fold1, fold2
-EXP_PREFIX="exp_endo2023_cutmargins" # costumize
+EXP_PREFIX="exp_endo2023_cutmargins_base_train" # costumize
 TASK="INSTRUMENTS"
 ARCH="TAPIS"
 
@@ -21,6 +21,7 @@ COCO_ANN_PATH="./"$DATA"/"$DATASET"/annotations/"$TEST_FOLD".json"
 FF_TRAIN="./"$DATA"/"$DATASET"/features/"$TRAIN_FOLD"_train_region_features.pth" 
 FF_TEST="./"$DATA"/"$DATASET"/features/"$TEST_FOLD"_val_region_features.pth"
 #CHECKPOINT="./"$DATA"/"$DATASET"/pretrained_models/"$TASK".pyth"
+# CHECKPOINT="/home/scanar/endovis/models/GraSP/TAPIS/outputs/Endoscapes2023_cutmargins/exp_endo2023_cutmargins/train/checkpoint_best_instruments.pyth"
 CHECKPOINT="./"$DATA"/"$DATASET"/weights/k400_16.pyth"
 
 #-------------------------
