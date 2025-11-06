@@ -411,7 +411,10 @@ def get_best_features(box_labels, box_features):
     best_box = []
     box_labels = {'x1': box_labels[0], 'y1': box_labels[1] ,'x2': box_labels[2], 'y2': box_labels[3]}
     
+    print(box_features)
+    
     for box_fe in box_features[0].keys():
+        
         coordinates = box_fe.split()
         coordinates = {'x1': float(coordinates[0]), 'y1': float(coordinates[1]), 'x2': float(coordinates[2]), 'y2': float(coordinates[3])}
         iou_bboxes = get_iou(box_labels,coordinates)

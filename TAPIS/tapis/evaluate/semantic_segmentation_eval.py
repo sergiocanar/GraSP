@@ -58,11 +58,16 @@ def eval_segmentation(task, coco_anns, preds, img_ann_dict, **kwargs):
             gt_classes = set()
             all_masks = []
             for im_ann in image_anns:
-                ann_cat = im_ann['instruments'] if 'instruments' in im_ann else im_ann['category_id']
-                gt_classes.add(ann_cat)
-                p_mask = decode_rle_to_mask(im_ann['segmentation'], 'uint8')
-                all_masks.append(p_mask * (im_ann['category_id']))
-            gt_img = np.max(np.array(all_masks), axis=0)
+                ann_cat = im_ann.get('instruments', im_ann['category_id'])
+                gt_classes.add(ann_cat)            
+                p_mask = decode_rle_to_mask(im_ann['segmentation'], 'uint8', height, width)
+                all_masks.append(p_mask * im_ann['category_id'])
+                
+                
+            if len(all_masks) == 0:
+                gt_img = np.zeros((height, width), dtype=np.uint8)
+            else:
+                gt_img = np.max(np.array(all_masks), axis=0)
 
         # Load predicted masks and classes
         image_preds = preds[file_name]["instances"]

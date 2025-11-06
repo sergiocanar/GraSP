@@ -27,8 +27,9 @@ def load_features_boxes(cfg,split):
         features = torch.load(cfg.FEATURES.TRAIN_FEATURES_PATH) 
     else:
         features = torch.load(cfg.FEATURES.TEST_FEATURES_PATH) 
-    features = {feat['file_name'] : feat['features'] for feat in features}
-    
+
+    features = {feat['file_name'] : feat['obj_features'] for feat in features}
+        
     for file,boxes in features.items():
         assert all(len(feats)==cfg.FEATURES.DIM_FEATURES for feats in boxes.values()), f'Incorrect feature length in image{file}. Excpected size {cfg.FEATURES.DIM_FEATURES}'
     return features
@@ -91,11 +92,11 @@ def load_boxes_and_labels(cfg, mode):
             coordinates of box and 'box_labels` are the corresponding
             labels for the box.
     """
-
     if mode=='train':
         gt_lists =[cfg.ENDOVIS_DATASET.TRAIN_GT_BOX_JSON] if cfg.ENDOVIS_DATASET.INCLUDE_GT or \
                                                             not cfg.ENDOVIS_DATASET.USE_PREDS else []
         pred_lists = [cfg.ENDOVIS_DATASET.TRAIN_PREDICT_BOX_JSON] if cfg.ENDOVIS_DATASET.USE_PREDS else []
+                
     elif cfg.ENDOVIS_DATASET.USE_PREDS:
         gt_lists =[]
         pred_lists = [cfg.ENDOVIS_DATASET.TEST_PREDICT_BOX_JSON]
@@ -110,7 +111,8 @@ def load_boxes_and_labels(cfg, mode):
     ann_is_gt_box = [True] * len(gt_lists) + [False] * len(pred_lists)
     detect_thresh = cfg.ENDOVIS_DATASET.DETECTION_SCORE_THRESH
 
-    all_boxes, count, count_unqiue = parse_bboxes_file(
+    # breakpoint()
+    all_boxes, count, count_unique = parse_bboxes_file(
         ann_filenames=ann_filenames,
         ann_is_gt_box=ann_is_gt_box,
         detect_thresh=detect_thresh,
@@ -121,7 +123,7 @@ def load_boxes_and_labels(cfg, mode):
     logger.info("Finished loading annotations from: %s" % ", ".join(ann_filenames))
     logger.info("Detection threshold: {}".format(detect_thresh))
     logger.info("Number of annotations: %d" % count)
-    logger.info("Number of unique annotations: %d" % count_unqiue)
+    logger.info("Number of unique annotations: %d" % count_unique)
 
     return all_boxes
 
@@ -140,6 +142,7 @@ def parse_bboxes_file(ann_filenames, ann_is_gt_box, detect_thresh, cfg, split):
     annotated_frames_dict = {}
     complete_frames = {} # 
     id2frame = {}
+    # breakpoint()
     for filename, is_gt_box in zip(ann_filenames, ann_is_gt_box):
         with pathmgr.open(filename, "r") as f:
             data = json.load(f)
@@ -152,7 +155,7 @@ def parse_bboxes_file(ann_filenames, ann_is_gt_box, detect_thresh, cfg, split):
                 annotated_frames_dict[image['video_name']][image['frame_num']] = []
                 complete_frames[image['video_name']][image['frame_num']] = True
             elif not is_gt_box:
-                logger.warning('Thres seem to be a repeated video name or frame number, better check if this is valid and comment this line if so.')
+                logger.warning('There seems to be a repeated video name or frame number, better check if this is valid and comment this line if so.')
                 breakpoint()
         
         for annotation in data['annotations']:
@@ -242,6 +245,7 @@ def get_keyframe_data(boxes_and_labels,keyframe_mapping):
     keyframe_indices = []
     keyframe_boxes_and_labels = []
     count = 0
+    # breakpoint()
     for video_idx in range(len(boxes_and_labels)):
         keyframe_boxes_and_labels.append([])
         for sec_idx,sec in enumerate(boxes_and_labels[video_idx]):

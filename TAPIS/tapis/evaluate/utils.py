@@ -8,6 +8,7 @@ import torch
 from tqdm import tqdm
 import pycocotools.mask as m
 
+
 def load_json(json_file):
     with open(json_file, "r") as f:
         data = json.load(f)
@@ -259,23 +260,44 @@ def decode_compressed_rle_to_mask(rle, dtype='uint8'):
     return mask
 
 
-def decode_rle_to_mask(rle, dtype='uint8'):
-    '''
-    This function decodes a run-length encoding (RLE) to a binary mask.
+# def decode_rle_to_mask(rle, dtype='uint8'):
+#     '''
+#     This function decodes a run-length encoding (RLE) to a binary mask.
     
-    Parameters:
-    rle : dict
-        The RLE representation of a mask.
+#     Parameters:
+#     rle : dict
+#         The RLE representation of a mask.
     
-    Returns:
-    numpy array
-        The binary mask where the mask region is 1 and the background is 0.
-    '''
+#     Returns:
+#     numpy array
+#         The binary mask where the mask region is 1 and the background is 0.
+#     '''
     
-    # Decode the RLE to a binary mask and convert it to unsigned 8-bit integer type
-    mask = m.decode(rle).astype('uint8')
+#     # Decode the RLE to a binary mask and convert it to unsigned 8-bit integer type
+#     mask = m.decode(rle).astype('uint8')
     
-    # Return the binary mask
+#     # Return the binary mask
+#     return mask
+
+
+
+def decode_rle_to_mask(segmentation, dtype='uint8', height=None, width=None):
+    """
+    Decode COCO-style segmentation (polygon or RLE) to a binary mask.
+    """
+    # Case 1: segmentation is polygon (list of lists of [x, y])
+    if isinstance(segmentation, list):
+        assert height is not None and width is not None, \
+            "height and width are required for polygon segmentations"
+        rles = m.frPyObjects(segmentation, height, width)
+        rle = m.merge(rles)
+    # Case 2: segmentation is RLE dict
+    elif isinstance(segmentation, dict) and "counts" in segmentation:
+        rle = segmentation
+    else:
+        raise ValueError(f"Unsupported segmentation format: {type(segmentation)}")
+
+    mask = m.decode(rle).astype(dtype)
     return mask
 
 def mask_to_bbox(mask, full_coordinates=False):

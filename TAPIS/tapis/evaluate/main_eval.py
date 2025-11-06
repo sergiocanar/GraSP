@@ -44,9 +44,24 @@ def get_img_ann_dict(coco_anns,task):
     for img in coco_anns["images"]:
         img_ann_dict[img["file_name"]] = []
     
+    
+    annos_lt = coco_anns["annotations"]
+    
+    for ann in annos_lt:
+        img_id = ann["image_id"]
+        # find the matching image info by id
+        img_info = next((img for img in coco_anns["images"] if img["id"] == img_id), None)
+        
+        if img_info is not None:
+            ann["image_name"] = img_info["file_name"]
+        else:
+            breakpoint()
+            ann["image_name"] = None  # or skip if missing
+
+    
     for idx, ann in enumerate(coco_anns["annotations"]):
         if ((task=='instruments' and 'category_id' in ann) and ann['category_id']>=0) or \
-            (task in ann and (ann[task]>=0 if type(ann[task]) is int else min(ann[task])>=0)):
+            (task in ann and (ann[task]>=0 if type(ann[task]) is int else min(ann[task])>=0)):            
             img_ann_dict[ann["image_name"]].append(idx)
     
     return img_ann_dict
