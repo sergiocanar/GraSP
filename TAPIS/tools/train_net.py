@@ -298,7 +298,7 @@ def train(cfg):
     optimizer = optim.construct_optimizer(model, cfg)
     
     # Create a GradScaler for mixed precision training
-    scaler = torch.cuda.amp.GradScaler(enabled=cfg.TRAIN.MIXED_PRECISION)
+    scaler = torch.amp.GradScaler(enabled=cfg.TRAIN.MIXED_PRECISION)
 
     # Load a checkpoint to resume training if applicable.
     start_epoch = cu.load_train_checkpoint(

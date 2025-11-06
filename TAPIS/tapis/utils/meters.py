@@ -88,6 +88,7 @@ class SurgeryMeter(object):
                 self.region_proposals = json.load(f)['annotations']
             final_proposals = {}
             for rp in self.region_proposals:
+                # breakpoint()
                 frame = rp['image_name']
                 if frame not in final_proposals:
                     final_proposals[frame] = {}
